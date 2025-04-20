@@ -1,0 +1,88 @@
+/* General Body Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7fc;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+/* Header Styles */
+header {
+    background-color: #2d3e50;
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.header-content h1 {
+    margin: 0;
+    font-size: 3em;
+}
+
+.header-content p {
+    margin-top: 10px;
+    font-size: 1.2em;
+}
+
+/* Job Listing Section */
+#job-list {
+    margin: 20px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#job-list h2 {
+    font-size: 2em;
+    color: #2d3e50;
+}
+
+ul#jobs {
+    list-style-type: none;
+    padding: 0;
+}
+
+.job-item {
+    background-color: #fafafa;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.job-item:hover {
+    transform: translateY(-10px);
+}
+
+.job-item h3 {
+    margin: 0;
+    font-size: 1.8em;
+    color: #2d3e50;
+}
+
+.job-item p {
+    margin: 5px 0;
+    font-size: 1.1em;
+}
+
+.job-item p strong {
+    color: #2d3e50;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-content h1 {
+        font-size: 2.5em;
+    }
+
+    .header-content p {
+        font-size: 1em;
+    }
+
+    #job-list {
+        margin: 10px;
+    }
+}

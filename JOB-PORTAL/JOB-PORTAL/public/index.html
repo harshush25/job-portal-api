@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Portal</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9; /* Soft light grey background */
+            color: #333;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        h1 {
+            color: #4e8c8b;  /* Soft teal color */
+            font-size: 30px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        h2 {
+            color: #4e8c8b;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        /* Input & Button Styles */
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #4e8c8b;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        textarea {
+            height: 80px;
+            resize: none;
+        }
+
+        button {
+            background-color: #4e8c8b;  /* Soft teal */
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #3d7268;  /* Darker teal */
+        }
+
+        .job-list {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .job-item {
+            background-color: #ffffff;
+            padding: 12px;
+            margin-bottom: 12px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .job-item h3 {
+            color: #4e8c8b;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .job-item p {
+            color: #555;
+            margin: 5px 0;
+        }
+
+        .delete-btn {
+            background-color: #f44336;  /* Red for delete */
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;  /* Darker red on hover */
+        }
+
+        /* Responsive Styling */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+                width: 90%;
+            }
+
+            button {
+                width: auto;
+                margin-top: 10px;
+            }
+
+            .job-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .delete-btn {
+                margin-top: 8px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Job Portal</h1>
+
+        <!-- Add Job Form -->
+        <div class="form-container">
+            <h2>Add New Job</h2>
+            <form id="job-form">
+                <input type="text" id="title" placeholder="Job Title" required>
+                <textarea id="description" placeholder="Job Description" required></textarea>
+                <input type="text" id="company" placeholder="Company Name" required>
+                <input type="text" id="location" placeholder="Location" required>
+                <button type="submit">Add Job</button>
+            </form>
+        </div>
+
+        <!-- Job List -->
+        <div>
+            <h2>All Jobs</h2>
+            <div id="job-list" class="job-list">
+                <!-- Jobs will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const jobListElement = document.getElementById('job-list');
+        const jobForm = document.getElementById('job-form');
+
+        // Fetch all jobs and render them
+        async function fetchJobs() {
+            try {
+                const response = await fetch('/api/jobs');
+                const jobs = await response.json();
+                renderJobs(jobs);
+            } catch (error) {
+                console.error('Error fetching jobs:', error);
+            }
+        }
+
+        // Render jobs with delete buttons
+        function renderJobs(jobs) {
+            jobListElement.innerHTML = ''; // Clear previous jobs
+            jobs.forEach(job => {
+                const jobItem = document.createElement('div');
+                jobItem.classList.add('job-item');
+                jobItem.innerHTML = `
+                    <div>
+                        <h3>${job.title}</h3>
+                        <p>${job.description}</p>
+                        <p><strong>${job.company}</strong> - ${job.location}</p>
+                    </div>
+                    <button class="delete-btn" onclick="deleteJob('${job._id}')">Delete</button>
+                `;
+                jobListElement.appendChild(jobItem);
+            });
+        }
+
+        // Delete job
+        async function deleteJob(jobId) {
+            try {
+                const response = await fetch(`/api/jobs/${jobId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    // After successful delete, refresh the job list
+                    fetchJobs();
+                } else {
+                    console.error('Failed to delete job');
+                }
+            } catch (error) {
+                console.error('Error deleting job:', error);
+            }
+        }
+
+        // Add new job
+        async function addJob(jobData) {
+            try {
+                const response = await fetch('/api/jobs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(jobData)
+                });
+
+                if (response.ok) {
+                    // After adding the job, fetch the updated list
+                    fetchJobs();
+                } else {
+                    console.error('Failed to add job');
+                }
+            } catch (error) {
+                console.error('Error adding job:', error);
+            }
+        }
+
+        // Handle form submission to add a new job
+        jobForm.addEventListener('submit', (event) => {
+            event.preventDefault();  // Prevent default form submission
+
+            const jobData = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                company: document.getElementById('company').value,
+                location: document.getElementById('location').value
+            };
+
+            // Add job to the database
+            addJob(jobData);
+
+            // Clear the form fields
+            jobForm.reset();
+        });
+
+        // Initial fetch of jobs
+        fetchJobs();
+    </script>
+
+</body>
+</html>
